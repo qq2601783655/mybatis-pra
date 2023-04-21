@@ -1,0 +1,39 @@
+<changelist name="变更" date="1682081603463" recycled="false">
+  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/变更/shelved.patch" />
+  <option name="DESCRIPTION" value="变更" />
+  <binary>
+    <option name="BEFORE_PATH" />
+    <option name="AFTER_PATH" value="target/classes/MainApplication/PoJo/Customer.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/变更/Customer.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" />
+    <option name="AFTER_PATH" value="target/classes/MainApplication/Mapper/CustomerMapper.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/变更/CustomerMapper.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" />
+    <option name="AFTER_PATH" value="target/classes/MainApplication/Main.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/变更/Main.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" />
+    <option name="AFTER_PATH" value="target/classes/MainApplication/PoJo/ProCar.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/变更/ProCar.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" />
+    <option name="AFTER_PATH" value="target/classes/MainApplication/Mapper/ProCarMapper.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/变更/ProCarMapper.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" />
+    <option name="AFTER_PATH" value="target/classes/MainApplication/Bean/SqlSessionUtil.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/变更/SqlSessionUtil.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" />
+    <option name="AFTER_PATH" value="target/classes/MainApplication/Controller/WebController.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/变更/WebController.class" />
+  </binary>
+</changelist>
