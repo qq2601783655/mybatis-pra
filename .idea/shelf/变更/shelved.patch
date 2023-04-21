@@ -1,0 +1,953 @@
+Index: src/main/resources/mybatis-config.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/resources/mybatis-config.xml b/src/main/resources/mybatis-config.xml
+new file mode 100644
+--- /dev/null	(date 1681877347914)
++++ b/src/main/resources/mybatis-config.xml	(date 1681877347914)
+@@ -0,0 +1,27 @@
++<?xml version="1.0" encoding="UTF-8" ?>
++        <!DOCTYPE configuration
++                PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
++                "https://mybatis.org/dtd/mybatis-3-config.dtd">
++<configuration>
++
++    <properties resource="jdbc.properties"/>
++    <settings>
++        <setting name="lazyLoadingEnabled" value="true"/>
++        <setting name="aggressiveLazyLoading" value="false"/>
++    </settings>
++
++    <environments default="development">
++        <environment id="development">
++            <transactionManager type="JDBC"/>
++            <dataSource type="POOLED">
++                <property name="driver" value="${jdbc.Driver}"/>
++                <property name="url" value="${jdbc.url}"/>
++                <property name="username" value="${jdbc.username}"/>
++                <property name="password" value="${jdbc.password}"/>
++            </dataSource>
++        </environment>
++    </environments>
++    <mappers>
++        <package name="MainApplication.Mapper"/>
++    </mappers>
++</configuration>
+\ No newline at end of file
+Index: src/main/java/MainApplication/PoJo/Customer.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/MainApplication/PoJo/Customer.java b/src/main/java/MainApplication/PoJo/Customer.java
+new file mode 100644
+--- /dev/null	(date 1681893835655)
++++ b/src/main/java/MainApplication/PoJo/Customer.java	(date 1681893835655)
+@@ -0,0 +1,25 @@
++package MainApplication.PoJo;
++
++import lombok.Data;
++import lombok.ToString;
++import org.springframework.stereotype.Component;
++
++import java.io.Serializable;
++
++@Component
++@Data
++@ToString
++public class Customer implements Serializable {
++
++    int cusId;
++    String name;
++    String slat;
++    String password;
++    String sex;
++    double account;
++    String address;
++    String phone;
++
++    ProCar proCar;
++
++}
+Index: src/main/java/MainApplication/Bean/SqlSessionUtil.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/MainApplication/Bean/SqlSessionUtil.java b/src/main/java/MainApplication/Bean/SqlSessionUtil.java
+new file mode 100644
+--- /dev/null	(date 1681825952390)
++++ b/src/main/java/MainApplication/Bean/SqlSessionUtil.java	(date 1681825952390)
+@@ -0,0 +1,27 @@
++package MainApplication.Bean;
++
++import org.apache.ibatis.io.Resources;
++import org.apache.ibatis.session.SqlSessionFactory;
++import org.apache.ibatis.session.SqlSessionFactoryBuilder;
++
++import java.io.IOException;
++import java.io.InputStream;
++
++public class SqlSessionUtil {
++
++    private static SqlSessionFactory sqlSessionFactory = null;
++
++    public static SqlSessionFactory getSqlSessionFactory() throws IOException {
++        if (sqlSessionFactory == null) {
++            synchronized (SqlSessionUtil.class) {
++                if (sqlSessionFactory == null) {
++                    String source = "mybatis-config.xml";
++                    InputStream resourceAsStream = Resources.getResourceAsStream(source);
++                    sqlSessionFactory = new SqlSessionFactoryBuilder().build(resourceAsStream);
++                }
++            }
++        }
++
++        return sqlSessionFactory;
++    }
++}
+\ No newline at end of file
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+new file mode 100644
+--- /dev/null	(date 1681824778089)
++++ b/.idea/misc.xml	(date 1681824778089)
+@@ -0,0 +1,14 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="ExternalStorageConfigurationManager" enabled="true" />
++  <component name="MavenProjectsManager">
++    <option name="originalFiles">
++      <list>
++        <option value="$PROJECT_DIR$/pom.xml" />
++      </list>
++    </option>
++  </component>
++  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
++    <output url="file://$PROJECT_DIR$/out" />
++  </component>
++</project>
+\ No newline at end of file
+Index: src/main/resources/MainApplication/Mapper/CustomerMapper.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/resources/MainApplication/Mapper/CustomerMapper.xml b/src/main/resources/MainApplication/Mapper/CustomerMapper.xml
+new file mode 100644
+--- /dev/null	(date 1682009421681)
++++ b/src/main/resources/MainApplication/Mapper/CustomerMapper.xml	(date 1682009421681)
+@@ -0,0 +1,94 @@
++<?xml version="1.0" encoding="UTF-8" ?>
++<!DOCTYPE mapper
++        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
++        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
++<mapper namespace="MainApplication.Mapper.CustomerMapper">
++<!--association 和 collection语法基本相同-->
++    <resultMap id="map1" type="MainApplication.PoJo.Customer">
++        <id property="cusId" column="cus_id"/>
++        <result property="name" column="name"/>
++        <result property="slat" column="slat"/>
++        <result property="password" column="password"/>
++        <result property="sex" column="sex"/>
++        <result property="account" column="account"/>
++        <result property="address" column="address"/>
++        <result property="phone" column="phone"/>
++        <collection property="proCar" ofType="MainApplication.PoJo.ProCar" select="MainApplication.Mapper.ProCarMapper.selectByCusId" column="cus_id">
++
++        </collection>
++    </resultMap>
++
++    <resultMap id="map" type="MainApplication.PoJo.Customer">
++        <id property="cusId" column="cus_id"/>
++        <result property="name" column="name"/>
++        <result property="slat" column="slat"/>
++        <result property="password" column="password"/>
++        <result property="sex" column="sex"/>
++        <result property="account" column="account"/>
++        <result property="address" column="address"/>
++        <result property="phone" column="phone"/>
++
++        <association  property="proCar" select="MainApplication.Mapper.ProCarMapper.selectByCusId" column="cus_id" fetchType="lazy" >
++
++        </association>
++
++    </resultMap>
++
++
++
++    <select id="selectByCusId" resultMap="map1">
++    select * from customer where 1=1
++    </select>
++
++    <select id="selectByCondition" resultMap="map1">
++        select * from customer where
++<!--        测试where-->
++
++<!--        <where>-->
++<!--            <if test="cusId != null">-->
++<!--                and cus_id = 1;-->
++<!--            </if>-->
++<!--        </where>-->
++
++        <!--        测试trim-->
++
++
++<!--        <trim prefix="where" suffix="" prefixOverrides="and" suffixOverrides="">-->
++<!--            &lt;!&ndash;-->
++<!--            prefix|suffix 在trim标签中内容前面或者后面添加指定的内容-->
++<!--            prefixOverrides|suffixOverrides  在trim标签中内容前面或者后面去掉指定的内容-->
++<!--             &ndash;&gt;-->
++<!--                        <if test="cusId != null">-->
++<!--                            and cus_id = 1;-->
++<!--                        </if>-->
++<!--        </trim>-->
++
++        <!--        测试choose，when，otherwise-->
++
++<!--        <choose>-->
++<!--            <when test="cusId!=null">-->
++<!--                cus_id = #{cusId}-->
++<!--            </when>-->
++<!--            <otherwise>-->
++
++<!--            </otherwise>-->
++<!--        </choose>-->
++        <!--        测试foreach ,做批量处理的-->
++
++
++
++
++
++    </select>
++    <cache/>
++    <sql id="CustomerColumns">cus_id,name,slat,password,sex,account,address,phone</sql>
++    <select id="selectByArray" resultMap="map1">
++
++    select <include refid="CustomerColumns"/> from customer where cus_id in (
++        <foreach collection="cusIds" item="cusId" separator=",">#{cusId}</foreach>)
++    </select>
++
++
++
++
++</mapper>
+Index: src/main/java/MainApplication/Mapper/CustomerMapper.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/MainApplication/Mapper/CustomerMapper.java b/src/main/java/MainApplication/Mapper/CustomerMapper.java
+new file mode 100644
+--- /dev/null	(date 1681893858270)
++++ b/src/main/java/MainApplication/Mapper/CustomerMapper.java	(date 1681893858270)
+@@ -0,0 +1,15 @@
++package MainApplication.Mapper;
++
++import MainApplication.PoJo.Customer;
++
++import java.io.Serializable;
++import java.util.List;
++
++public interface CustomerMapper  {
++
++    List<Customer> selectByCusId(int cusId);
++    List<Customer> selectByCondition(Customer customer);
++    List<Customer> selectByArray(Integer[] cusIds);
++
++
++}
+Index: src/main/resources/generatorConfiguration.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/resources/generatorConfiguration.xml b/src/main/resources/generatorConfiguration.xml
+new file mode 100644
+--- /dev/null	(date 1682012773685)
++++ b/src/main/resources/generatorConfiguration.xml	(date 1682012773685)
+@@ -0,0 +1,41 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<!DOCTYPE generatorConfiguration
++        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
++        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
++<generatorConfiguration>
++    <!--
++    targetRuntime: 执行生成的逆向工程的版本
++    MyBatis3Simple: 生成基本的CRUD（清新简洁版）
++    MyBatis3: 生成带条件的CRUD（奢华尊享版）
++    -->
++<!--    <context id="DB2Tables" targetRuntime="MyBatis3Simple">-->
++    <context id="DB2Tables" targetRuntime="MyBatis3">
++        <!-- 数据库的连接信息 -->
++        <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
++                        connectionURL="jdbc:mysql://localhost:3306/mydatabase"
++                        userId="root"
++                        password="root">
++        </jdbcConnection>
++        <!-- javaBean的生成策略-->
++        <javaModelGenerator targetPackage="com.atguigu.mybatis.pojo" targetProject=".\src\main\java">
++            <property name="enableSubPackages" value="true" />
++            <property name="trimStrings" value="true" />
++        </javaModelGenerator>
++        <!-- SQL映射文件的生成策略 -->
++        <sqlMapGenerator targetPackage="com.atguigu.mybatis.mapper"
++                         targetProject=".\src\main\resources">
++            <property name="enableSubPackages" value="true" />
++        </sqlMapGenerator>
++        <!-- Mapper接口的生成策略 -->
++        <javaClientGenerator type="XMLMAPPER"
++                             targetPackage="com.atguigu.mybatis.mapper" targetProject=".\src\main\java">
++            <property name="enableSubPackages" value="true" />
++        </javaClientGenerator>
++        <!-- 逆向分析的表 -->
++        <!-- tableName设置为*号，可以对应所有表，此时不写domainObjectName -->
++        <!-- domainObjectName属性指定生成出来的实体类的类名 -->
++<!--        <table tableName="t_emp" domainObjectName="Emp"/>-->
++<!--        <table tableName="t_dept" domainObjectName="Dept"/>-->
++        <table tableName="customer" domainObjectName="Customer"/>
++    </context>
++</generatorConfiguration>
+\ No newline at end of file
+Index: src/main/java/MainApplication/PoJo/ProCar.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/MainApplication/PoJo/ProCar.java b/src/main/java/MainApplication/PoJo/ProCar.java
+new file mode 100644
+--- /dev/null	(date 1681872574284)
++++ b/src/main/java/MainApplication/PoJo/ProCar.java	(date 1681872574284)
+@@ -0,0 +1,16 @@
++package MainApplication.PoJo;
++import lombok.Data;
++import lombok.ToString;
++import org.springframework.stereotype.Component;
++@Component
++@ToString
++@Data
++public class ProCar {
++
++
++    int pId;
++    int cusId;
++    int num;
++
++
++}
+Index: src/main/resources/MainApplication/Mapper/ProCarMapper.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/resources/MainApplication/Mapper/ProCarMapper.xml b/src/main/resources/MainApplication/Mapper/ProCarMapper.xml
+new file mode 100644
+--- /dev/null	(date 1681873827372)
++++ b/src/main/resources/MainApplication/Mapper/ProCarMapper.xml	(date 1681873827372)
+@@ -0,0 +1,22 @@
++<?xml version="1.0" encoding="UTF-8" ?>
++<!DOCTYPE mapper
++        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
++        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
++<mapper namespace="MainApplication.Mapper.ProCarMapper">
++
++    <select id="selectByCusId" resultMap="map1">
++        select * from pro_car where cus_id = #{cusId}
++    </select>
++
++    <resultMap id="map1" type="MainApplication.PoJo.ProCar">
++        <result property="pId" column="p_id"/>
++        <result property="cusId" column="cus_id"/>
++        <result property="num" column="num"/>
++    </resultMap>
++
++    <select id="selectByPId" resultType="MainApplication.PoJo.ProCar">
++        select * from pro_car where pro_id = #{pId}
++    </select>
++
++
++</mapper>
+Index: src/main/java/MainApplication/Mapper/ProCarMapper.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/MainApplication/Mapper/ProCarMapper.java b/src/main/java/MainApplication/Mapper/ProCarMapper.java
+new file mode 100644
+--- /dev/null	(date 1681875117303)
++++ b/src/main/java/MainApplication/Mapper/ProCarMapper.java	(date 1681875117303)
+@@ -0,0 +1,12 @@
++package MainApplication.Mapper;
++
++import MainApplication.PoJo.ProCar;
++
++import java.util.List;
++
++public interface ProCarMapper {
++
++    List<ProCar> selectByCusId(int cusId);
++    List<ProCar> selectByPId(int pId);
++
++}
+Index: .idea/encodings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/encodings.xml b/.idea/encodings.xml
+new file mode 100644
+--- /dev/null	(date 1681824893279)
++++ b/.idea/encodings.xml	(date 1681824893279)
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="Encoding">
++    <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
++    <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/compiler.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/compiler.xml b/.idea/compiler.xml
+new file mode 100644
+--- /dev/null	(date 1682081354120)
++++ b/.idea/compiler.xml	(date 1682081354120)
+@@ -0,0 +1,19 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="CompilerConfiguration">
++    <annotationProcessing>
++      <profile default="true" name="Default" enabled="true" />
++      <profile name="Maven default annotation processors profile" enabled="true">
++        <sourceOutputDir name="target/generated-sources/annotations" />
++        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
++        <outputRelativeToContentRoot value="true" />
++        <module name="mybatis-pra" />
++      </profile>
++    </annotationProcessing>
++  </component>
++  <component name="JavacSettings">
++    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
++      <module name="mybatis-pra" options="-parameters" />
++    </option>
++  </component>
++</project>
+\ No newline at end of file
+Index: target/classes/MainApplication/Mapper/ProCarMapper.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/target/classes/MainApplication/Mapper/ProCarMapper.xml b/target/classes/MainApplication/Mapper/ProCarMapper.xml
+new file mode 100644
+--- /dev/null	(date 1681873827372)
++++ b/target/classes/MainApplication/Mapper/ProCarMapper.xml	(date 1681873827372)
+@@ -0,0 +1,22 @@
++<?xml version="1.0" encoding="UTF-8" ?>
++<!DOCTYPE mapper
++        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
++        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
++<mapper namespace="MainApplication.Mapper.ProCarMapper">
++
++    <select id="selectByCusId" resultMap="map1">
++        select * from pro_car where cus_id = #{cusId}
++    </select>
++
++    <resultMap id="map1" type="MainApplication.PoJo.ProCar">
++        <result property="pId" column="p_id"/>
++        <result property="cusId" column="cus_id"/>
++        <result property="num" column="num"/>
++    </resultMap>
++
++    <select id="selectByPId" resultType="MainApplication.PoJo.ProCar">
++        select * from pro_car where pro_id = #{pId}
++    </select>
++
++
++</mapper>
+Index: .idea/jarRepositories.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/jarRepositories.xml b/.idea/jarRepositories.xml
+new file mode 100644
+--- /dev/null	(date 1681825098757)
++++ b/.idea/jarRepositories.xml	(date 1681825098757)
+@@ -0,0 +1,25 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="RemoteRepositoriesConfiguration">
++    <remote-repository>
++      <option name="id" value="central" />
++      <option name="name" value="Central Repository" />
++      <option name="url" value="https://repo.maven.apache.org/maven2" />
++    </remote-repository>
++    <remote-repository>
++      <option name="id" value="central" />
++      <option name="name" value="Central Repository" />
++      <option name="url" value="http://maven.aliyun.com/nexus/content/repositories/central/" />
++    </remote-repository>
++    <remote-repository>
++      <option name="id" value="central" />
++      <option name="name" value="Maven Central repository" />
++      <option name="url" value="https://repo1.maven.org/maven2" />
++    </remote-repository>
++    <remote-repository>
++      <option name="id" value="jboss.community" />
++      <option name="name" value="JBoss Community repository" />
++      <option name="url" value="https://repository.jboss.org/nexus/content/repositories/public/" />
++    </remote-repository>
++  </component>
++</project>
+\ No newline at end of file
+Index: target/classes/MainApplication/Mapper/CustomerMapper.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/target/classes/MainApplication/Mapper/CustomerMapper.xml b/target/classes/MainApplication/Mapper/CustomerMapper.xml
+new file mode 100644
+--- /dev/null	(date 1681894115322)
++++ b/target/classes/MainApplication/Mapper/CustomerMapper.xml	(date 1681894115322)
+@@ -0,0 +1,96 @@
++<?xml version="1.0" encoding="UTF-8" ?>
++<!DOCTYPE mapper
++        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
++        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
++<mapper namespace="MainApplication.Mapper.CustomerMapper">
++<!--association 和 collection语法基本相同-->
++    <resultMap id="map1" type="MainApplication.PoJo.Customer">
++        <id property="cusId" column="cus_id"/>
++        <result property="name" column="name"/>
++        <result property="slat" column="slat"/>
++        <result property="password" column="password"/>
++        <result property="sex" column="sex"/>
++        <result property="account" column="account"/>
++        <result property="address" column="address"/>
++        <result property="phone" column="phone"/>
++        <collection property="proCar" ofType="MainApplication.PoJo.ProCar" select="MainApplication.Mapper.ProCarMapper.selectByCusId" column="cus_id">
++
++        </collection>
++    </resultMap>
++
++    <resultMap id="map" type="MainApplication.PoJo.Customer">
++        <id property="cusId" column="cus_id"/>
++        <result property="name" column="name"/>
++        <result property="slat" column="slat"/>
++        <result property="password" column="password"/>
++        <result property="sex" column="sex"/>
++        <result property="account" column="account"/>
++        <result property="address" column="address"/>
++        <result property="phone" column="phone"/>
++
++        <association  property="proCar" select="MainApplication.Mapper.ProCarMapper.selectByCusId" column="cus_id" fetchType="lazy" >
++
++        </association>
++
++    </resultMap>
++
++
++
++    <select id="selectByCusId" resultMap="map1">
++    select * from customer where 1=1
++    </select>
++
++    <select id="selectByCondition" resultMap="map1">
++        select * from customer where
++<!--        测试where-->
++
++<!--        <where>-->
++<!--            <if test="cusId != null">-->
++<!--                and cus_id = 1;-->
++<!--            </if>-->
++<!--        </where>-->
++
++        <!--        测试trim-->
++
++
++<!--        <trim prefix="where" suffix="" prefixOverrides="and" suffixOverrides="">-->
++<!--            &lt;!&ndash;-->
++<!--            prefix|suffix 在trim标签中内容前面或者后面添加指定的内容-->
++<!--            prefixOverrides|suffixOverrides  在trim标签中内容前面或者后面去掉指定的内容-->
++<!--             &ndash;&gt;-->
++<!--                        <if test="cusId != null">-->
++<!--                            and cus_id = 1;-->
++<!--                        </if>-->
++<!--        </trim>-->
++
++        <!--        测试choose，when，otherwise-->
++
++<!--        <choose>-->
++<!--            <when test="cusId!=null">-->
++<!--                cus_id = #{cusId}-->
++<!--            </when>-->
++<!--            <otherwise>-->
++
++<!--            </otherwise>-->
++<!--        </choose>-->
++
++        <!--        测试foreach ,做批量处理的-->
++
++
++
++    </select>
++    <cache/>
++    <sql id="CustomerColumns">cus_id,name,slat,password,sex,account,address,phone</sql>
++    <select id="selectByArray" resultMap="map1">
++
++    select <include refid="CustomerColumns"/> from customer where cus_id in (
++    <foreach collection="cusIds" item="cusId" separator=",">
++        #{cusId}
++    </foreach>
++    )
++    </select>
++
++
++
++
++</mapper>
+Index: target/classes/mybatis-config.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/target/classes/mybatis-config.xml b/target/classes/mybatis-config.xml
+new file mode 100644
+--- /dev/null	(date 1681877347914)
++++ b/target/classes/mybatis-config.xml	(date 1681877347914)
+@@ -0,0 +1,27 @@
++<?xml version="1.0" encoding="UTF-8" ?>
++        <!DOCTYPE configuration
++                PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
++                "https://mybatis.org/dtd/mybatis-3-config.dtd">
++<configuration>
++
++    <properties resource="jdbc.properties"/>
++    <settings>
++        <setting name="lazyLoadingEnabled" value="true"/>
++        <setting name="aggressiveLazyLoading" value="false"/>
++    </settings>
++
++    <environments default="development">
++        <environment id="development">
++            <transactionManager type="JDBC"/>
++            <dataSource type="POOLED">
++                <property name="driver" value="${jdbc.Driver}"/>
++                <property name="url" value="${jdbc.url}"/>
++                <property name="username" value="${jdbc.username}"/>
++                <property name="password" value="${jdbc.password}"/>
++            </dataSource>
++        </environment>
++    </environments>
++    <mappers>
++        <package name="MainApplication.Mapper"/>
++    </mappers>
++</configuration>
+\ No newline at end of file
+Index: src/main/java/MainApplication/Main.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/MainApplication/Main.java b/src/main/java/MainApplication/Main.java
+new file mode 100644
+--- /dev/null	(date 1681825380345)
++++ b/src/main/java/MainApplication/Main.java	(date 1681825380345)
+@@ -0,0 +1,16 @@
++package MainApplication;
++
++import org.springframework.boot.SpringApplication;
++import org.springframework.boot.autoconfigure.SpringBootApplication;
++import org.springframework.context.ConfigurableApplicationContext;
++
++@SpringBootApplication
++public class Main {
++
++
++    public static void main(String[] args) {
++
++        ConfigurableApplicationContext run = SpringApplication.run(Main.class, args);
++
++    }
++}
+Index: target/classes/templates/index.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/target/classes/templates/index.html b/target/classes/templates/index.html
+new file mode 100644
+--- /dev/null	(date 1681825275894)
++++ b/target/classes/templates/index.html	(date 1681825275894)
+@@ -0,0 +1,10 @@
++<!DOCTYPE html>
++<html lang="en">
++<head>
++    <meta charset="UTF-8">
++    <title>Title</title>
++</head>
++<body>
++
++</body>
++</html>
+\ No newline at end of file
+Index: target/classes/jdbc.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>ISO-8859-1
+===================================================================
+diff --git a/target/classes/jdbc.properties b/target/classes/jdbc.properties
+new file mode 100644
+--- /dev/null	(date 1681827518640)
++++ b/target/classes/jdbc.properties	(date 1681827518640)
+@@ -0,0 +1,4 @@
++jdbc.Driver = com.mysql.jdbc.Driver
++jdbc.url = jdbc:mysql://localhost:3306/mydatabase
++jdbc.username = root
++jdbc.password = root
+\ No newline at end of file
+Index: src/main/resources/templates/index.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/resources/templates/index.html b/src/main/resources/templates/index.html
+new file mode 100644
+--- /dev/null	(date 1681825275894)
++++ b/src/main/resources/templates/index.html	(date 1681825275894)
+@@ -0,0 +1,10 @@
++<!DOCTYPE html>
++<html lang="en">
++<head>
++    <meta charset="UTF-8">
++    <title>Title</title>
++</head>
++<body>
++
++</body>
++</html>
+\ No newline at end of file
+Index: src/main/java/MainApplication/Controller/WebController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/MainApplication/Controller/WebController.java b/src/main/java/MainApplication/Controller/WebController.java
+new file mode 100644
+--- /dev/null	(date 1681893687857)
++++ b/src/main/java/MainApplication/Controller/WebController.java	(date 1681893687857)
+@@ -0,0 +1,57 @@
++package MainApplication.Controller;
++
++import MainApplication.Bean.SqlSessionUtil;
++import MainApplication.Mapper.CustomerMapper;
++import MainApplication.Mapper.ProCarMapper;
++import MainApplication.PoJo.Customer;
++import MainApplication.PoJo.ProCar;
++import org.apache.ibatis.session.SqlSession;
++import org.apache.ibatis.session.SqlSessionFactory;
++import org.junit.Test;
++import org.springframework.stereotype.Controller;
++import org.springframework.web.bind.annotation.RequestMapping;
++
++import java.io.IOException;
++import java.util.List;
++
++@Controller
++public class WebController {
++
++
++    @RequestMapping("/")
++    public String index(){
++        return "index";
++    }
++
++    @Test
++    public void selectByCusId() throws IOException {
++
++        SqlSessionFactory sqlSessionFactory = SqlSessionUtil.getSqlSessionFactory();
++        SqlSession sqlSession = sqlSessionFactory.openSession();
++        CustomerMapper mapper = sqlSession.getMapper(CustomerMapper.class);
++//        List<Customer> customers = mapper.selectByCusId(1);
++        Customer customer = new Customer();
++        customer.setCusId(1);
++        Integer integer[] = {1,2,3};
++        List<Customer> customers = mapper.selectByArray(new Integer[]{1,2,3});
++        sqlSession.clearCache();
++        sqlSession.commit();
++        List<Customer> customers1 = mapper.selectByArray(new Integer[]{1,2,3});
++        System.out.println(customers);
++
++    }
++
++    @Test
++    public void selectProCarByCusId() throws IOException {
++
++        SqlSessionFactory sqlSessionFactory = SqlSessionUtil.getSqlSessionFactory();
++        SqlSession sqlSession = sqlSessionFactory.openSession();
++        ProCarMapper mapper = sqlSession.getMapper(ProCarMapper.class);
++        List<ProCar> proCars = mapper.selectByCusId(1);
++        System.out.println(proCars);
++    }
++
++
++
++
++}
+Index: pom.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/pom.xml b/pom.xml
+new file mode 100644
+--- /dev/null	(date 1682012319233)
++++ b/pom.xml	(date 1682012319233)
+@@ -0,0 +1,96 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project xmlns="http://maven.apache.org/POM/4.0.0"
++         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
++         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
++    <modelVersion>4.0.0</modelVersion>
++    <parent>
++        <artifactId>spring-boot-starter-parent</artifactId>
++        <groupId>org.springframework.boot</groupId>
++        <version>2.7.7</version>
++    </parent>
++
++    <groupId>org.example</groupId>
++    <artifactId>mybatis-pra</artifactId>
++    <version>1.0-SNAPSHOT</version>
++
++    <properties>
++        <maven.compiler.source>8</maven.compiler.source>
++        <maven.compiler.target>8</maven.compiler.target>
++        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
++    </properties>
++
++    <dependencies>
++
++        <dependency>
++            <groupId>org.springframework.boot</groupId>
++            <artifactId>spring-boot-starter-web</artifactId>
++        </dependency>
++
++        <dependency>
++            <groupId>org.thymeleaf</groupId>
++            <artifactId>thymeleaf-spring5</artifactId>
++        </dependency>
++
++        <dependency>
++            <groupId>mysql</groupId>
++            <artifactId>mysql-connector-java</artifactId>
++        </dependency>
++        <dependency>
++            <groupId>org.projectlombok</groupId>
++            <artifactId>lombok</artifactId>
++        </dependency>
++
++        <dependency>
++            <groupId>junit</groupId>
++            <artifactId>junit</artifactId>
++            <version>4.12</version>
++        </dependency>
++
++        <dependency>
++            <groupId>org.mybatis.spring.boot</groupId>
++            <artifactId>mybatis-spring-boot-starter</artifactId>
++            <version>1.3.2</version>
++        </dependency>
++
++
++    </dependencies>
++
++    <build>
++        <!-- 构建过程中用到的插件 -->
++        <plugins>
++            <!-- 具体插件，逆向工程的操作是以构建过程中插件形式出现的 -->
++            <plugin>
++                <groupId>org.mybatis.generator</groupId>
++                <artifactId>mybatis-generator-maven-plugin</artifactId>
++                <version>1.3.0</version>
++                <!-- 插件的依赖 -->
++                <dependencies>
++                    <!-- 逆向工程的核心依赖 -->
++                    <dependency>
++                        <groupId>org.mybatis.generator</groupId>
++                        <artifactId>mybatis-generator-core</artifactId>
++                        <version>1.3.2</version>
++                    </dependency>
++                    <!-- 数据库连接池 -->
++                    <dependency>
++                        <groupId>com.mchange</groupId>
++                        <artifactId>c3p0</artifactId>
++                        <version>0.9.2</version>
++                    </dependency>
++                    <!-- MySQL驱动 -->
++                    <dependency>
++                        <groupId>mysql</groupId>
++                        <artifactId>mysql-connector-java</artifactId>
++                        <version>8.0.27</version>
++                    </dependency>
++                </dependencies>
++            </plugin>
++        </plugins>
++    </build>
++
++
++
++
++
++
++</project>
+\ No newline at end of file
+Index: src/main/resources/jdbc.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>ISO-8859-1
+===================================================================
+diff --git a/src/main/resources/jdbc.properties b/src/main/resources/jdbc.properties
+new file mode 100644
+--- /dev/null	(date 1681827518640)
++++ b/src/main/resources/jdbc.properties	(date 1681827518640)
+@@ -0,0 +1,4 @@
++jdbc.Driver = com.mysql.jdbc.Driver
++jdbc.url = jdbc:mysql://localhost:3306/mydatabase
++jdbc.username = root
++jdbc.password = root
+\ No newline at end of file
+Index: .idea/.gitignore
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/.gitignore b/.idea/.gitignore
+new file mode 100644
+--- /dev/null	(date 1681824783290)
++++ b/.idea/.gitignore	(date 1681824783290)
+@@ -0,0 +1,10 @@
++# 默认忽略的文件
++/shelf/
++/workspace.xml
++# 基于编辑器的 HTTP 客户端请求
++/httpRequests/
++# Datasource local storage ignored files
++/dataSources/
++/dataSources.local.xml
++# Zeppelin ignored files
++/ZeppelinRemoteNotebooks/
+diff --git a/target/classes/application.properties b/target/classes/application.properties
+new file mode 100644
+diff --git a/src/main/resources/application.properties b/src/main/resources/application.properties
+new file mode 100644
